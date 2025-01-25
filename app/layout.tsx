@@ -1,32 +1,49 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
+import { ImageKitProvider } from "@/components/ImageKit";
+import React, { ReactNode } from "react";
+import QueryClientWrapper from "@/components/QueryClientWrapper";
+import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const inter = Inter({
-  variable: "--font-inter",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-
 export const metadata: Metadata = {
-  title: "Masjid Raden Patah",
-  description: "Masjid Raden Patah Universitas Brawijaya",
+  title: {
+    default: "Masjid Raden Patah",
+    template: "%s - Masjid Raden Patah",
+  },
+  description: "Masjid Raden Patah Universitas Brawijaya, Malang",
 };
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
+  modal: ReactNode;
 }>) {
   return (
     <html lang="en">
-      <body
-      className={`${inter.variable} ${inter.className} antialiased flex flex-col bg-[#EDEDED]`}
-      >
-      {children}
-      </body>
+      <QueryClientWrapper>
+        <ImageKitProvider>
+          <body
+            className={`${poppins.variable} ${poppins.className} flex flex-col bg-[#EDEDED] antialiased`}
+          >
+            {modal}
+            <Navbar />
+            <main className={"w-full"}>{children}</main>
+            <Footer />
+            <Toaster />
+          </body>
+        </ImageKitProvider>
+      </QueryClientWrapper>
     </html>
   );
 }

@@ -1,187 +1,201 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import FacilityCard from "@/components/FacilityCard";
-import eyeglasses from "@/public/facilities/eyeglasses.jpg";
-import robe from "@/public/facilities/mukena.jpg";
-import p3k from "@/public/facilities/kotak_p3k.jpg";
-import penitipan_barang from "@/public/facilities/tempat_penitipan_barang.jpg";
-import plastik_sepatu from "@/public/facilities/plastik_sepatu.jpg";
-import shoes from "@/public/facilities/rak_sepatu.jpg";
-import qris_mrp from "@/public/facilities/qris_mrp.jpg";
-import proyektor from "@/public/facilities/proyektor.jpg";
-import braille from "@/public/facilities/quran_braille.jpg";
-import etalase_barang_temuan
-  from "@/public/facilities/etalase_barang_temuan.jpg";
-import cctv from "@/public/facilities/cctv.jpg";
-import charger_box from "@/public/facilities/charger_box.jpg";
+import { motion } from "framer-motion";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import { StaticImageData } from "next/image";
-import { ReactNode, useState } from "react";
-import { log } from "node:util";
+import { facilities } from "@/data/Facilities";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import SectionTitle from "@/components/SectionTitle";
 
-// TODO: This is from DATABASE
-interface Facility {
-  image: StaticImageData;
-  title: string;
-  icon: ReactNode;
-}
-
-const facilities: Facility[] = [
-  {
-    title: "Kacamata Baca",
-    image: eyeglasses,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Mukena",
-    image: robe,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "CCTV",
-    image: cctv,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Kotak P3K ",
-    image: p3k,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Etalase Barang Temuan ",
-    image: etalase_barang_temuan,
-    icon: <Eye className={"text-white"} />
-  }
-  ,
-  {
-    title: "Charger Box ",
-    image: charger_box,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Tempat Penitipan Barang",
-    image: penitipan_barang,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Plastik Alas Kaki Jama'ah",
-    image: plastik_sepatu,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Kotak Infaq Digital (Qris)",
-    image: qris_mrp,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Qur'an Braille",
-    image: braille,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Lemari Alas Kaki",
-    image: shoes,
-    icon: <Eye className={"text-white"} />
-  },
-  {
-    title: "Proyektor",
-    image: proyektor,
-    icon: <Eye className={"text-white"} />
-  }
-];
-
 const Facilities = () => {
+  // Variants Start Here
+  const parentVariant = {
+    hidden: {},
+    justifyBetween: {},
+    exit: {},
+  };
+  const childVariant = {
+    hidden: { opacity: 0, y: 0, x: 0 },
+    exit: { opacity: 0, y: 0, x: 0 },
+    justifyBetween: ({
+      index,
+      parentWidth,
+      numberItem,
+    }: {
+      index: number;
+      parentWidth: number;
+      numberItem: number;
+      boxWidth: number;
+    }) => {
+      const boxWidth = parentWidth / numberItem;
+      let calculatedBoxStartPos: number = index * boxWidth;
+      if (boxWidth <= 301) calculatedBoxStartPos += 32 * index - 1;
+
+      let opacity = 1;
+      let blur: string = "blur(0px)";
+      if (index === 4 || index === 0) {
+        if (parentWidth > 1536) {
+          opacity = 0.7;
+          blur = "blur(2px)";
+        }
+      }
+      return {
+        opacity,
+        x: calculatedBoxStartPos,
+        y: 0,
+        filter: blur,
+        transition: {
+          ease: "easeInOut",
+          type: "tween",
+          // delay: 0.04 * index,
+        },
+      };
+    },
+  };
+  // Variants End Here
+
+  const [parentWidth, setParentWidth] = useState(0);
+
   const [current, setCurrent] = useState<number>(0);
 
-  const facilitiesLoop: Facility[] = [
-    ...facilities.slice(current, current + 5),
-    ...facilities.slice(0, Math.max(0, current + 5 - facilities.length)) // Wrap around if needed
-  ];
+  useEffect(() => {
+    if (parentWidth === 0) setParentWidth(window.innerWidth);
+
+    const handleResize = () => {
+      setParentWidth(window.innerWidth);
+      if (window.innerWidth < 1536) setParentWidth(1536);
+    };
+
+    // Tambahkan event listener
+    window.addEventListener("resize", handleResize);
+
+    // Bersihkan event listener saat komponen unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [parentWidth]);
+
   const prev = () => {
+    setParentWidth(window.innerWidth);
+    if (window.innerWidth < 1536) setParentWidth(1536);
+
     // Update current and loop
-    const newCurrent = (current - 1 + facilities.length) % facilities.length;
-    setCurrent(newCurrent);
-    console.log(newCurrent);
+    const newCurrent = (current - 1) % facilities.length;
+
+    setCurrent(newCurrent < 0 ? facilities.length - 1 : newCurrent);
   };
 
   const next = () => {
+    setParentWidth(window.innerWidth);
+    if (window.innerWidth < 1536) setParentWidth(1536);
+
     // Update current and loop
     const newCurrent = (current + 1) % facilities.length;
     setCurrent(newCurrent);
-    console.log(newCurrent * (100 / facilities.length));
   };
 
-
   return (
-    <>
-      <div className={"bg-secondary w-full py-[120px] "}>
-        <SectionTitle title={'Fasilitas di Masjid Raden Patah'} subtitle={'Yuk kita lihat fasilitas yang ada di Masjid Raden Patah'} />
+    <section
+      data-testid="facilities-section"
+      className={"glassmorphic-lg w-full py-[120px]"}
+    >
+      <div className={"relative w-full space-y-6 px-4 md:px-0"}>
+        <SectionTitle
+          title={"Fasilitas di Masjid Raden Patah"}
+          subtitle={"Yuk kita lihat fasilitas yang ada di Masjid Raden Patah"}
+          className={"container w-full"}
+        />
+        <motion.div
+          variants={parentVariant}
+          initial={"hidden"}
+          animate={"justifyBetween"}
+          exit={"exit"}
+          transition={{
+            duration: 5,
+            staggerChildren: 0.2,
+            ease: "easeInOut",
+            type: "tween",
+          }}
+          className={"relative flex h-fit min-h-20 min-w-[1536px] gap-12"}
+        >
+          {/* Children Starts Here */}
+          {Array.from({ length: 5 }).map((_, i) => {
+            const index =
+              (current - 2 + (i + 1) + facilities.length) % facilities.length;
+            const facility = facilities[index];
+            return (
+              <motion.div
+                variants={childVariant}
+                key={index}
+                whileHover={{ scale: 1.05, transition: { duration: 0.01 } }}
+                className="absolute flex h-fit w-1/5 min-w-[300px] flex-col items-center justify-center p-1 text-2xl font-bold text-white xl:p-4"
+                transition={{ duration: 1 }}
+                custom={{
+                  index: i,
+                  parentWidth,
+                  numberItem: 5,
+                }}
+              >
+                <FacilityCard {...facility}></FacilityCard>
+              </motion.div>
+            );
+          })}
 
-
-        <div className={"container py-12 relative"}>
-
-          <AnimatePresence>
-
-            <motion.div
-              className="flex w-full gap-8  justify-center h-[350px]"
-              transition={{ staggerChildren: 0.5 }}
-              // animate={{x: current * (100)}}
-            >
-              {Array.from({ length: 5 }).map((_, i) => {
-                // Hitung indeks dengan wrap-around
-                const index = (current - 2 + i + facilities.length) % facilities.length;
-                const item = facilities[index];
-
-                return (
-                  <FacilityCard
-                    title={item.title}
-                    image={item.image}
-                    icon={item.icon}
-                    key={index}
-                  />
-                );
-              })}
-            </motion.div>
-          </AnimatePresence>
+          <div className="pointer-events-none relative flex h-fit w-1/5 flex-col items-center justify-center p-1 text-2xl font-bold text-white opacity-0 xl:p-4">
+            <FacilityCard
+              {...facilities[0]}
+              title={"Long Text Given Here Hahahaha"}
+            />
+          </div>
+          {/* Children Ends Here */}
           <div
-            className="flex gap-2 w-full justify-between absolute inset-0 h-fit top-1/2">
-            <button className={"relative left-[102%] p-4 rounded-full" +
-              " bg-primary" +
-              " h-fit" +
-              " text-white"} onClick={next}>
-              <ChevronRight />
-            </button>
-            <button className={"p-4 rounded-full right-[102%] relative" +
-              " bg-primary h-fit" +
-              " text-white"} onClick={prev}>
+            className={
+              "pointer-events-none absolute z-50 flex h-full w-screen justify-center p-8 2xl:container md:items-center lg:inset-0" +
+              " items-end max-md:pb-0 md:justify-between 2xl:p-0"
+            }
+          >
+            <button
+              className={
+                "pointer-events-auto relative h-fit rounded-lg bg-secondary p-4 text-primary shadow-xl hover:bg-white hover:text-primary" +
+                " max-md:translate-y-[150%]" +
+                " hover:text-white" +
+                " active:bg-primary"
+              }
+              onClick={prev}
+            >
               <ChevronLeft />
             </button>
+            <button
+              className={
+                "pointer-events-auto relative h-fit rounded-lg bg-secondary p-4 text-primary shadow-xl hover:bg-white hover:text-primary" +
+                " hover:text-white active:bg-primary max-md:translate-y-[150%]"
+              }
+              onClick={next}
+            >
+              <ChevronRight />
+            </button>
           </div>
+        </motion.div>
 
-
-        </div>
-        <div className={'container flex gap-2' +
-          ' items-center justify-center' +
-          ' w-full pt-12 z-50'}>
+        <div
+          className={
+            "container z-50 mt-8 hidden w-full items-center justify-center gap-2 md:flex"
+          }
+        >
           {facilities.map((_, index) => {
             return (
               <button
                 key={index}
-                className={`size-4 ${index === current ? 'bg-primary' : 'bg-gray-400'} hover:bg-secondary rounded-full`}
+                className={`size-4 ${index === current ? "bg-primary" : "bg-gray-400"} rounded-full hover:bg-secondary`}
                 onClick={() => {
-                  console.log(index);
-                  setCurrent(index)
+                  setCurrent(index);
                 }}
               />
-            )
+            );
           })}
-
         </div>
       </div>
-    </>
-  )
-    ;
+    </section>
+  );
 };
 export default Facilities;
