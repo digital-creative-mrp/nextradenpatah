@@ -1,6 +1,6 @@
 "use server";
 // import { Program, ProgramExecution } from "@/types/Program";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { Program, ProgramExecution, ProgramStatus } from "@prisma/client";
 import { ActionResponse } from "@/types";
 
