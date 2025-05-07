@@ -12,7 +12,7 @@ const Page = () => {
   return (
     <div
       className={
-        "mt-32 flex size-full flex-col items-center gap-12 overflow-hidden px-4 py-24 sm:px-0 md:gap-24"
+        "flex size-full flex-col items-center gap-12 overflow-hidden px-4 py-32 sm:px-0 md:gap-24"
       }
     >
       <section
@@ -21,10 +21,12 @@ const Page = () => {
           " py-12"
         }
       >
-        <p className={"max-w-prose"}>
+
+        <p className={"max-w-prose text-center"}>
           Layanan Masjid Raden Patah Universitas Brawijaya
         </p>
-        <h1 className={"text-5xl font-bold tracking-wide"}>
+        <h1 className={"text-center text-5xl font-bold tracking-wide"}>
+
           Layanan Akad Nikah
         </h1>
       </section>
