@@ -1,8 +1,3 @@
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -69,12 +64,12 @@ model Account {
   provider          String
   providerAccountId String
 
-  refresh_token            String? @db.Text
-  access_token             String? @db.Text
+  refresh_token            String?
+  access_token             String?
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String? @db.Text
+  id_token                 String?
   session_state            String?
   refresh_token_expires_in Int?
 
@@ -123,10 +118,10 @@ model ApiKey {
 }
 
 model Program {
-  id               String             @id // title-year-identifier
+  id               String             @id
   title            String
-  description      String             @db.MediumText
-  content          String             @db.LongText
+  description      String
+  content          String
   image            String
   type             ProgramType
   customeUrl       String?
@@ -148,7 +143,7 @@ model Article {
   title    String
   slug     String          @unique
   category ArticleCategory @default(NOT_SET)
-  content  String          @db.LongText
+  content  String
   coverUrl String?
   views    Int             @default(0)
   status   ArticleStatus   @default(DRAFT)

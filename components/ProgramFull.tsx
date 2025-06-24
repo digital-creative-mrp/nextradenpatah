@@ -1,63 +1,53 @@
+"use client";
 import React from "react";
-import { ImageKitImage } from "@/components/ImageKit";
-import { cn } from "@/lib/utils";
-import { Maximize2 } from "lucide-react";
+import { ImageKitImageById } from "@/components/ImageKit";
 import { Program } from "@prisma/client";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 type Props = {
   program: Program; // Program bisa null
-  className: string;
 };
 
-const ProgramPreview = ({ program, className }: Props) => {
+const ProgramFull = ({ program }: Props) => {
   return (
-    <Card
-      className={cn(
-        "container relative my-24 items-center shadow-2xl",
-        className,
-      )}
+    <div
+      className={
+        "flex size-full flex-col items-center gap-12 overflow-hidden px-4 pb-32 sm:px-0"
+      }
     >
-      <CardHeader>
-        <h2 className={"text-center text-3xl font-bold"}>{program.title}</h2>
-        <p
-          className={
-            "absolute right-4 top-6 ms-auto mt-0 w-fit rounded-lg bg-emerald-500 px-4 py-2 text-white"
-          }
-        >
+      <section
+        className={
+          "glassmorphic-sm container relative flex w-full flex-col items-center justify-center gap-4 rounded-xl bg-white/35 px-4 xl:max-w-screen-lg" +
+          " py-12"
+        }
+      >
+        <p className={"max-w-prose text-center"}>
           {program.type !== "ANNUALY"
             ? "Program Rutin Harian"
-            : "Program Tahunan"}
+            : "Program Tahunan"}{" "}
+          Masjid Raden Patah Universitas Brawijaya{" "}
         </p>
-      </CardHeader>
-      <CardContent className={"relative"}>
-        <ImageKitImage
-          height={300}
-          width={300}
+        <h1 className={"text-center text-5xl font-bold tracking-wide"}>
+          {program.title}
+        </h1>
+      </section>
+      <section className="container xl:max-w-screen-lg">
+        <ImageKitImageById
+          height={500}
+          width={500}
           alt={`Gambar dari program ${program.title}`}
-          path={program.image}
+          id={program.image}
           className={"mx-auto mb-8 rounded-2xl border-4 border-white shadow-xl"}
         />
-
-        <article
-          className={
-            "space-y-4 text-justify lg:text-lg [&_p]:mx-auto [&_p]:[text-indent:2em] [&_p]:xl:max-w-screen-lg"
-          }
-          dangerouslySetInnerHTML={{ __html: program.content }}
-        />
-        {program.customeUrl && (
-          <>
-            <Button variant={"outline"} asChild>
-              <Link href={program.customeUrl} className={"mt-4"}>
-                See full detail <Maximize2 />
-              </Link>
-            </Button>
-          </>
-        )}
-      </CardContent>
-    </Card>
+      </section>
+      <section className="container xl:max-w-screen-lg">
+        <div className="flex w-full justify-center">
+          <article
+            className={"tiptap container"}
+            dangerouslySetInnerHTML={{ __html: program.content }}
+          />
+        </div>
+      </section>
+    </div>
   );
 };
-export default ProgramPreview;
+export default ProgramFull;
